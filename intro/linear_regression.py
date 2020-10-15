@@ -20,3 +20,7 @@ yfit = model.predict(xfit.reshape(-1, 1))
 plt.scatter(x, y)
 plt.plot(xfit, yfit, color='red')
 plt.show()
+
+print("Model slope: {:.4f}".format(model.coef_[0]))
+print("Model intercept: {:.4f}".format(model.intercept_))
+
