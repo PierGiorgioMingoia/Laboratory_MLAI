@@ -59,6 +59,31 @@ plot_symbol_size = 50
 # plt.ylim(yy.min(), yy.max())
 # plt.show()
 
+def plot_data_and_decision_boundaries(X,knn):
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+    Z = knn.predict(np.c_[xx.ravel(), yy.ravel()])
+
+    Z = Z.reshape(xx.shape)
+    plt.figure()
+
+    plt.contourf(xx, yy, Z, cmap=cmap_light, alpha=0.8)
+    # plot training data
+    plt.scatter(X_train[:, 0], X_train[:, 1], s=plot_symbol_size, c=y_train, cmap=cmap_bold, edgecolor='black')
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    patch0 = mpatches.Patch(color='#FFFF00', label='class 0')
+    patch1 = mpatches.Patch(color='#000000', label='class 1')
+    patch2 = mpatches.Patch(color='#0000FF', label='class 2')
+    plt.legend(handles=[patch0, patch1, patch2])
+    plt.xlabel(wine.feature_names[0])
+    plt.ylabel(wine.feature_names[1])
+    plt.title(title)
+    plt.show()
+
+
 for i in range(1, 3, 2):
     knn = neighbors.KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train, y_train)
