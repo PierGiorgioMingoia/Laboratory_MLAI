@@ -26,9 +26,29 @@ accuracy_value = []
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.14)  # 0.14* 0.7 = 0.2
 
+matrix = []
+for c in Cs:
+    for gamma in gammas:
+        # Create a SVC classifier using an RBF kernel
+        clf = svm.SVC(kernel='rbf', random_state=0, C=c, gamma=gamma)
+        # Train the classifier
+        clf.fit(X_train, y_train)
+        score = clf.score(X_val, y_val)
+        matrix.append(score)
+
+matrix = np.array(matrix)
+print(matrix)
+
+scores = matrix.reshape(5,7)
+
+"""
+# Create a SVC classifier using an RBF kernel
+svm = svm.SVC(kernel='rbf', random_state=0, C=100, gamma=10000)
+# Train the classifier
+svm.fit(X_train, y_train)
 best, matrix = svc_param_selection(X_train, y_train)
 scores = matrix.reshape(5, 7)
-
+"""
 print(len(matrix))
 
 fig, ax = plt.subplots(figsize=(8, 6))
@@ -43,3 +63,4 @@ for i in range(len(gammas)):
         ax.text(i, j, c, va='center', ha='center')
 
 plt.show()
+

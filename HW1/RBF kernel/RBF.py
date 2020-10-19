@@ -8,38 +8,35 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import GridSearchCV
 
+# const
+h = 0.02  # step size
+cmap_light = ListedColormap(['#FFFFAA', '#AAFFAA', '#AAAAFF', '#EFEFEF'])
+cmap_bold = ListedColormap(['#FFFF00', '#00FF00', '#0000FF', '#000000'])
+plot_symbol_size = 50
+
 
 # plot decision region
-def plot_decision_regions(X, y, classifier, X_test, y_test, resolution=0.02):
-    # setup marker generator and color map
-    markers = ('s', 'x', 'o', '^', 'v')
-    colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
-    cmap = ListedColormap(colors[:len(np.unique(y))])
-
-    # plot the decision surface
-    x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-    x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution),
-                           np.arange(x2_min, x2_max, resolution))
-    Z = classifier.predict(np.c_[xx1.ravel(), xx2.ravel()])
-    Z = Z.reshape(xx1.shape)
-    plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=cmap)
-    plt.xlim(xx1.min(), xx1.max())
-    plt.ylim(xx2.min(), xx2.max())
-
-    for idx, cl in enumerate(np.unique(y)):
-        color = cmap(idx)
-        plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1],
-                    alpha=0.8, c=color,
-                    marker=markers[idx], label=cl)
-
-    plt.scatter(X_test[:, 0],
-                X_test[:, 1],
-                c=y_test,
-                alpha=1.0,
-                linewidths=1,
-                marker='o',
-                s=55, label='test set')
+def plot_data_and_decision_boundaries(data, x_train, y_train, clf, gamma, c):
+    x_min, x_max = data[:, 0].min() - 1, data[:, 0].max() + 1
+    y_min, y_max = data[:, 1].min() - 1, data[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    plt.figure()
+    plt.contourf(xx, yy, Z, cmap=cmap_light, alpha=0.8)
+    # plot training data
+    plt.scatter(x_train[:, 0], x_train[:, 1], s=plot_symbol_size, c=y_train, cmap=cmap_bold, edgecolor='black')
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    patch0 = mpatches.Patch(color='#FFFF00', label='class 0')
+    patch1 = mpatches.Patch(color='#000000', label='class 1')
+    patch2 = mpatches.Patch(color='#0000FF', label='class 2')
+    plt.legend(handles=[patch0, patch1, patch2])
+    plt.xlabel(attributes[0])
+    plt.ylabel(attributes[1])
+    title = "C = {}, gamma = {}".format(c, gamma)
+    plt.title(title)
+    plt.show()
 
 
 # Step 1 load and Split data
@@ -55,12 +52,9 @@ c_list = [0.01, 1, 100]
 gamma_list = [0.1, 1, 10]
 
 # Create a SVC classifier using an RBF kernel
-svm = svm.SVC(kernel='rbf', random_state=0, gamma=10000, C=100)
+svm = svm.SVC(kernel='rbf', random_state=0, C=100, gamma=10000)
 # Train the classifier
 svm.fit(X_train, y_train)
 
 # Visualize the decision boundaries
-plot_decision_regions(X_train, y_train, svm, X_test, y_test)
-plt.legend(loc='upper left')
-plt.tight_layout()
-plt.show()
+plot_data_and_decision_boundaries(X, X_train, y_train, svm, gamma=10000, c=100)

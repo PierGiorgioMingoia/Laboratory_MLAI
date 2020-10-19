@@ -13,7 +13,7 @@ gammas = [0.0001, 0.001, 0.1, 1, 10, 100, 10000]
 
 def svc_param_selection(X, y):
     param_grid = {'C': Cs, 'gamma': gammas}
-    grid_search = GridSearchCV(svm.SVC(kernel='rbf'), param_grid, cv=10)
+    grid_search = GridSearchCV(svm.SVC(kernel='rbf'), param_grid, cv=5)
     grid_search.fit(X, y)
     return grid_search.best_params_, grid_search.cv_results_['mean_test_score']
 

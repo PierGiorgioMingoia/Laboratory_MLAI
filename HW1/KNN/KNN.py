@@ -13,16 +13,16 @@ cmap_bold = ListedColormap(['#FFFF00', '#00FF00', '#0000FF', '#000000'])
 plot_symbol_size = 50
 
 
-def plot_data_and_decision_boundaries(x_test, clf, k):
-    x_min, x_max = x_test[:, 0].min() - 1, x_test[:, 0].max() + 1
-    y_min, y_max = x_test[:, 1].min() - 1, x_test[:, 1].max() + 1
+def plot_data_and_decision_boundaries(data,x_train,y_train, clf, k):
+    x_min, x_max = data[:, 0].min() - 1, data[:, 0].max() + 1
+    y_min, y_max = data[:, 1].min() - 1, data[:, 1].max() + 1
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
     plt.figure()
     plt.contourf(xx, yy, Z, cmap=cmap_light, alpha=0.8)
     # plot training data
-    plt.scatter(x_test[:, 0], x_test[:, 1], s=plot_symbol_size, c=y_train, cmap=cmap_bold, edgecolor='black')
+    plt.scatter(x_train[:, 0], x_train[:, 1], s=plot_symbol_size, c=y_train, cmap=cmap_bold, edgecolor='black')
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
     patch0 = mpatches.Patch(color='#FFFF00', label='class 0')
@@ -68,7 +68,7 @@ for k in list:
     # apply
     y_test_predicted = knn.predict(X_test)
     # plot data and decision bound
-    plot_data_and_decision_boundaries(X_train, knn, k)
+    plot_data_and_decision_boundaries(X, X_train,y_train, knn, k)
 
     # evaluate
     a = knn.score(X_val, y_val)
